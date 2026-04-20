@@ -1,0 +1,668 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap');
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--gold:#C9A84C;--dark:#0A0A0F;--card:#111118;--surface:#16161E;--text:#F0EDE6;--muted:#8A8795;--red:#D94040;--green:#2ECC71;--blue:#4A9EE8}
+body{background:var(--dark);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px}
+.wrap{min-height:600px;background:var(--dark)}
+
+nav{display:flex;align-items:center;justify-content:space-between;padding:12px 24px;border-bottom:0.5px solid rgba(255,255,255,0.08);position:sticky;top:0;z-index:50;background:rgba(10,10,15,0.96);backdrop-filter:blur(12px)}
+.logo{font-family:'Playfair Display',serif;font-size:19px;font-weight:900;color:var(--gold);letter-spacing:2px;cursor:pointer}
+.nav-links{display:flex;gap:18px}
+.nav-links span{font-size:12px;color:var(--muted);cursor:pointer;transition:color 0.2s;padding:4px 0}
+.nav-links span:hover,.nav-links span.active{color:var(--text)}
+.nav-right{display:flex;align-items:center;gap:10px}
+.search-wrap{position:relative}
+.search-box{background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:20px;padding:6px 14px 6px 32px;font-size:12px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;width:190px;transition:width 0.3s,border-color 0.2s}
+.search-box:focus{width:240px;border-color:rgba(201,168,76,0.4)}
+.search-box::placeholder{color:var(--muted)}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:12px;pointer-events:none}
+.icon-btn{width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;font-size:13px}
+.notif-dot{position:absolute;top:5px;right:5px;width:5px;height:5px;border-radius:50%;background:var(--red)}
+.avatar{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,#C9A84C,#8B5E2A);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;cursor:pointer}
+
+/* HERO */
+.hero{position:relative;height:380px;overflow:hidden}
+.hero-slides{display:flex;transition:transform 0.65s cubic-bezier(.4,0,.2,1)}
+.hero-slide{min-width:100%;position:relative;height:380px}
+.hero-bg-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0.38}
+.hero-overlay{position:absolute;inset:0;background:linear-gradient(to right,rgba(10,10,15,0.98) 32%,rgba(10,10,15,0.12))}
+.hero-content{position:relative;z-index:2;padding:40px 24px;max-width:480px}
+.hero-badge{display:inline-block;background:var(--gold);color:#1a0800;font-size:9px;font-weight:500;letter-spacing:2px;padding:3px 10px;border-radius:3px;margin-bottom:12px;text-transform:uppercase}
+.hero-title{font-family:'Playfair Display',serif;font-size:34px;font-weight:900;line-height:1.1;margin-bottom:10px}
+.hero-meta{display:flex;gap:10px;margin-bottom:14px;align-items:center;flex-wrap:wrap}
+.hero-meta span{font-size:12px;color:var(--muted)}
+.hero-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;max-width:380px}
+.btn-group{display:flex;gap:9px}
+.btn-play{background:var(--gold);color:#1a0800;border:none;padding:9px 22px;border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-play:hover{opacity:0.85}
+.btn-info{background:rgba(255,255,255,0.08);color:var(--text);border:0.5px solid rgba(255,255,255,0.15);padding:9px 18px;border-radius:6px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif}
+.btn-info:hover{background:rgba(255,255,255,0.13)}
+.hero-poster-wrap{position:absolute;right:24px;top:24px;z-index:2}
+.hero-poster{width:175px;height:262px;border-radius:11px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.85);border:0.5px solid rgba(255,255,255,0.12)}
+.hero-poster img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-dots{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:3}
+.dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,0.3);cursor:pointer;transition:all 0.2s}
+.dot.active{background:var(--gold);width:16px;border-radius:3px}
+.hero-arr{position:absolute;top:50%;transform:translateY(-50%);z-index:3;width:34px;height:34px;border-radius:50%;background:rgba(0,0,0,0.5);border:0.5px solid rgba(255,255,255,0.1);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+.hero-arr:hover{background:rgba(201,168,76,0.3)}
+.hero-prev{left:12px}.hero-next{right:12px}
+
+/* TABS */
+.page-tabs{display:flex;border-bottom:0.5px solid rgba(255,255,255,0.07);padding:0 24px}
+.page-tab{padding:11px 18px;font-size:12px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.2s}
+.page-tab.active{color:var(--gold);border-color:var(--gold)}
+
+/* GENRE TABS */
+.genre-bar{display:flex;gap:6px;padding:14px 24px;overflow-x:auto;scrollbar-width:none}
+.genre-bar::-webkit-scrollbar{display:none}
+.genre-tab{padding:5px 13px;border-radius:20px;font-size:11px;cursor:pointer;border:0.5px solid rgba(255,255,255,0.1);color:var(--muted);background:transparent;font-family:'DM Sans',sans-serif;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
+.genre-tab.active,.genre-tab:hover{background:var(--gold);color:#1a0800;border-color:var(--gold)}
+
+/* SORT BAR */
+.sort-bar{display:flex;align-items:center;justify-content:space-between;padding:0 24px 12px}
+.sort-label{font-size:12px;color:var(--muted)}
+.sort-select{background:rgba(255,255,255,0.06);border:0.5px solid rgba(255,255,255,0.1);border-radius:6px;padding:5px 10px;font-size:11px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;cursor:pointer}
+.sort-select option{background:var(--surface)}
+.view-toggle{display:flex;gap:4px}
+.vbtn{width:26px;height:26px;border-radius:5px;border:0.5px solid rgba(255,255,255,0.1);background:transparent;color:var(--muted);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px}
+.vbtn.active{background:var(--gold);color:#1a0800;border-color:var(--gold)}
+
+/* MOVIE GRID / LIST */
+.section{padding:16px 24px}
+.section-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700}
+.see-all{font-size:11px;color:var(--gold);cursor:pointer}
+.scroll-row{display:flex;gap:11px;overflow-x:auto;padding-bottom:6px;scrollbar-width:none}
+.scroll-row::-webkit-scrollbar{display:none}
+.movie-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(128px,1fr));gap:12px}
+.movie-grid.list-view{grid-template-columns:1fr}
+.movie-card{cursor:pointer;transition:transform 0.22s;position:relative}
+.movie-card:hover{transform:translateY(-3px)}
+.movie-grid.list-view .movie-card{display:flex;gap:12px;align-items:flex-start}
+.movie-poster-wrap{aspect-ratio:2/3;border-radius:9px;overflow:hidden;margin-bottom:7px;position:relative;background:var(--card);border:0.5px solid rgba(255,255,255,0.07);flex-shrink:0}
+.scroll-card .movie-poster-wrap{width:120px;height:180px;aspect-ratio:unset}
+.list-view .movie-poster-wrap{width:70px;height:105px;aspect-ratio:unset;margin-bottom:0;flex-shrink:0}
+.movie-poster-wrap img{width:100%;height:100%;object-fit:cover;display:block;transition:transform 0.3s}
+.movie-card:hover .movie-poster-wrap img{transform:scale(1.05)}
+.badge{position:absolute;top:6px;left:6px;border-radius:3px;padding:2px 6px;font-size:9px;font-weight:500;z-index:1}
+.badge-rating{background:rgba(10,10,15,0.85);border:0.5px solid rgba(255,255,255,0.1);color:var(--gold)}
+.badge-new{background:var(--red);color:#fff}
+.badge-top{background:#0f2a0f;color:var(--green);border:0.5px solid rgba(46,204,113,0.3)}
+.badge-hot{background:#2a1500;color:#FF8C00;border:0.5px solid rgba(255,140,0,0.3)}
+.movie-overlay{position:absolute;inset:0;background:rgba(0,0,0,0);display:flex;align-items:center;justify-content:center;transition:background 0.22s;border-radius:9px}
+.movie-card:hover .movie-overlay{background:rgba(0,0,0,0.52)}
+.play-btn{width:36px;height:36px;border-radius:50%;background:var(--gold);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(0.8);transition:all 0.2s}
+.movie-card:hover .play-btn{opacity:1;transform:scale(1)}
+.play-tri{width:0;height:0;border-left:11px solid #1a0800;border-top:6px solid transparent;border-bottom:6px solid transparent;margin-left:2px}
+.fav-btn{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;background:rgba(0,0,0,0.6);border:0.5px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:2;font-size:11px;opacity:0;transition:opacity 0.2s}
+.movie-card:hover .fav-btn,.fav-btn.active{opacity:1}
+.fav-btn.active{background:rgba(217,64,64,0.8);border-color:var(--red)}
+.movie-title{font-size:11px;font-weight:500;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.movie-info{font-size:10px;color:var(--muted);display:flex;gap:5px}
+.list-view .movie-info-block{flex:1}
+.list-view .movie-title{font-size:13px;font-weight:500;white-space:normal;margin-bottom:4px}
+.list-desc{font-size:11px;color:var(--muted);line-height:1.6;margin-top:4px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+
+/* MODAL */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,0.9);z-index:200;display:none;align-items:center;justify-content:center;padding:12px}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:14px;width:480px;max-width:96vw;border:0.5px solid rgba(255,255,255,0.1);position:relative;overflow:hidden;max-height:92vh;overflow-y:auto}
+.modal-hero{height:170px;position:relative;overflow:hidden}
+.modal-hero img{width:100%;height:100%;object-fit:cover;filter:brightness(0.45)}
+.modal-hero-overlay{position:absolute;inset:0;background:linear-gradient(to top,var(--surface) 0%,transparent 55%)}
+.modal-body{padding:16px 20px 20px}
+.modal-close{position:absolute;top:10px;right:10px;cursor:pointer;color:#fff;font-size:16px;z-index:1;width:26px;height:26px;border-radius:50%;background:rgba(0,0,0,0.55);display:flex;align-items:center;justify-content:center}
+.modal-poster-sm{position:absolute;bottom:-8px;left:20px;width:72px;height:108px;border-radius:7px;overflow:hidden;border:2px solid var(--surface)}
+.modal-poster-sm img{width:100%;height:100%;object-fit:cover}
+.modal-title-row{margin-left:90px;margin-bottom:10px}
+.modal-title-row h3{font-family:'Playfair Display',serif;font-size:18px;margin-bottom:4px}
+.modal-tags{display:flex;gap:4px;flex-wrap:wrap}
+.tag{background:rgba(201,168,76,0.13);color:var(--gold);font-size:10px;padding:2px 8px;border-radius:20px;border:0.5px solid rgba(201,168,76,0.3)}
+.tag.red{background:rgba(217,64,64,0.13);color:var(--red);border-color:rgba(217,64,64,0.3)}
+.modal-stats{display:flex;gap:12px;margin:12px 0;padding:10px 0;border-top:0.5px solid rgba(255,255,255,0.07);border-bottom:0.5px solid rgba(255,255,255,0.07)}
+.stat{text-align:center;flex:1}
+.stat-val{font-size:14px;font-weight:500;color:var(--gold)}
+.stat-lbl{font-size:9px;color:var(--muted);margin-top:2px}
+.modal-desc{font-size:12px;color:var(--muted);line-height:1.7;margin-bottom:12px}
+.cast-title{font-size:11px;color:var(--muted);margin-bottom:6px}
+.cast-list{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px}
+.cast-tag{background:rgba(255,255,255,0.05);border:0.5px solid rgba(255,255,255,0.1);border-radius:20px;padding:2px 9px;font-size:10px}
+.modal-actions{display:flex;gap:8px}
+.modal-btn-play{flex:1;background:var(--gold);color:#1a0800;border:none;padding:10px;border-radius:7px;font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif}
+.modal-btn-sm{width:38px;background:rgba(255,255,255,0.06);color:var(--text);border:0.5px solid rgba(255,255,255,0.1);border-radius:7px;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center}
+/* SIMILAR */
+.similar-title{font-size:12px;color:var(--muted);margin:14px 0 8px}
+.similar-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.similar-row::-webkit-scrollbar{display:none}
+.sim-card{flex-shrink:0;width:80px;cursor:pointer}
+.sim-poster{width:80px;height:120px;border-radius:6px;overflow:hidden;margin-bottom:4px;background:var(--card)}
+.sim-poster img{width:100%;height:100%;object-fit:cover}
+.sim-title{font-size:10px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* RATING STARS */
+.user-rating{margin:12px 0;padding:12px;background:rgba(255,255,255,0.04);border-radius:8px;border:0.5px solid rgba(255,255,255,0.07)}
+.ur-title{font-size:11px;color:var(--muted);margin-bottom:7px}
+.stars{display:flex;gap:4px}
+.star-btn{font-size:20px;cursor:pointer;filter:grayscale(1);transition:filter 0.15s,transform 0.15s}
+.star-btn:hover,.star-btn.lit{filter:grayscale(0);transform:scale(1.15)}
+.ur-msg{font-size:11px;color:var(--muted);margin-top:6px;min-height:14px}
+
+/* WATCHLIST PAGE */
+.wl-page{display:none;padding:20px 24px}
+.wl-empty{text-align:center;padding:50px 20px;color:var(--muted);font-size:13px}
+
+/* TRENDING PAGE */
+.trend-page{display:none}
+
+/* STATS PAGE */
+.stats-page{display:none;padding:20px 24px}
+.stat-card{background:var(--card);border-radius:10px;padding:14px;border:0.5px solid rgba(255,255,255,0.07);margin-bottom:12px}
+.stat-card-title{font-size:11px;color:var(--muted);margin-bottom:10px}
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:7px}
+.score-label{font-size:11px;color:var(--muted);width:80px;flex-shrink:0}
+.score-bar{flex:1;height:4px;background:rgba(255,255,255,0.07);border-radius:2px;overflow:hidden}
+.score-fill{height:100%;background:linear-gradient(to right,var(--gold),#E8C87A);border-radius:2px}
+.score-num{font-size:10px;color:var(--muted);width:26px;text-align:right}
+.pie-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}
+.pie-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted)}
+.pie-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.mini-stat{background:var(--card);border-radius:8px;padding:12px;border:0.5px solid rgba(255,255,255,0.07);text-align:center}
+.mini-val{font-size:22px;font-weight:500;color:var(--gold)}
+.mini-lbl{font-size:10px;color:var(--muted);margin-top:2px}
+
+/* SEARCH RESULTS */
+.search-page{display:none;padding:16px 24px}
+
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(70px);background:var(--surface);border:0.5px solid rgba(255,255,255,0.12);border-radius:7px;padding:9px 18px;font-size:12px;color:var(--text);z-index:300;transition:transform 0.3s;white-space:nowrap;box-shadow:0 8px 24px rgba(0,0,0,0.4)}
+.toast.show{transform:translateX(-50%) translateY(0)}
+
+footer{padding:14px 24px;border-top:0.5px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:center}
+footer span{font-size:11px;color:var(--muted)}
+</style>
+
+<div class="wrap">
+<nav>
+  <div class="logo" onclick="goPage('home')">CINEMAX</div>
+  <div class="nav-links">
+    <span class="active" id="nav-home" onclick="goPage('home')">หน้าหลัก</span>
+    <span id="nav-trending" onclick="goPage('trending')">กำลังฮิต</span>
+    <span id="nav-watchlist" onclick="goPage('watchlist')">รายการโปรด</span>
+    <span id="nav-stats" onclick="goPage('stats')">สถิติ</span>
+  </div>
+  <div class="nav-right">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input class="search-box" placeholder="ค้นหาหนัง นักแสดง..." id="searchInput" oninput="onSearch(this.value)">
+    </div>
+    <div class="icon-btn">🔔<span class="notif-dot"></span></div>
+    <div class="avatar">A</div>
+  </div>
+</nav>
+
+<!-- HOME PAGE -->
+<div id="page-home">
+  <div class="hero" id="heroSection">
+    <div class="hero-slides" id="heroSlides"></div>
+    <button class="hero-arr hero-prev" onclick="slideHero(-1)">‹</button>
+    <button class="hero-arr hero-next" onclick="slideHero(1)">›</button>
+    <div class="hero-dots" id="heroDots"></div>
+  </div>
+  <div class="page-tabs">
+    <div class="page-tab active" id="tab-all" onclick="switchTab('all')">ทั้งหมด</div>
+    <div class="page-tab" id="tab-toprated" onclick="switchTab('toprated')">คะแนนสูงสุด</div>
+    <div class="page-tab" id="tab-new" onclick="switchTab('new')">มาใหม่</div>
+    <div class="page-tab" id="tab-classic" onclick="switchTab('classic')">คลาสสิก</div>
+  </div>
+  <div class="genre-bar" id="genreBar"></div>
+  <div class="sort-bar">
+    <span class="sort-label" id="resultCount"></span>
+    <div style="display:flex;gap:8px;align-items:center">
+      <select class="sort-select" onchange="sortMovies(this.value)">
+        <option value="default">เรียงตาม: ค่าเริ่มต้น</option>
+        <option value="rating">คะแนนสูง-ต่ำ</option>
+        <option value="year_new">ปีใหม่-เก่า</option>
+        <option value="year_old">ปีเก่า-ใหม่</option>
+        <option value="az">ชื่อ A-Z</option>
+      </select>
+      <div class="view-toggle">
+        <button class="vbtn active" id="vgrid" onclick="setView('grid')">⊞</button>
+        <button class="vbtn" id="vlist" onclick="setView('list')">☰</button>
+      </div>
+    </div>
+  </div>
+  <div class="section" style="padding-top:0">
+    <div class="section-header"><div class="section-title">🔥 Top 10</div><span class="see-all">ดูทั้งหมด →</span></div>
+    <div class="scroll-row" id="top10Row"></div>
+  </div>
+  <div class="section" style="padding-top:0">
+    <div class="section-header"><div class="section-title" id="gridTitle">ภาพยนตร์</div></div>
+    <div class="movie-grid" id="movieGrid"></div>
+  </div>
+</div>
+
+<!-- TRENDING PAGE -->
+<div class="trend-page" id="page-trending">
+  <div class="section">
+    <div class="section-header"><div class="section-title">📈 กำลังฮิตตอนนี้</div></div>
+    <div class="movie-grid" id="trendGrid"></div>
+  </div>
+</div>
+
+<!-- WATCHLIST PAGE -->
+<div class="wl-page" id="page-watchlist">
+  <div class="section-header"><div class="section-title">❤️ รายการโปรดของฉัน</div><span class="see-all" id="wlCount"></span></div>
+  <div class="movie-grid" id="wlGrid"></div>
+  <div class="wl-empty" id="wlEmpty" style="display:none">ยังไม่มีรายการโปรด<br><span style="font-size:11px">กด ♡ บนปกหนังเพื่อบันทึก</span></div>
+</div>
+
+<!-- STATS PAGE -->
+<div class="stats-page" id="page-stats">
+  <div class="grid-2">
+    <div class="mini-stat"><div class="mini-val" id="s-total">0</div><div class="mini-lbl">หนังทั้งหมด</div></div>
+    <div class="mini-stat"><div class="mini-val" id="s-fav">0</div><div class="mini-lbl">รายการโปรด</div></div>
+    <div class="mini-stat"><div class="mini-val" id="s-avg">0</div><div class="mini-lbl">คะแนนเฉลี่ย</div></div>
+    <div class="mini-stat"><div class="mini-val" id="s-rated">0</div><div class="mini-lbl">หนังที่คุณให้คะแนน</div></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-title">คะแนนเฉลี่ยแต่ละแนว</div>
+    <div id="genreScores"></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-title">สัดส่วนแนวหนัง</div>
+    <div class="pie-row" id="genrePie"></div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-card-title">หนังคะแนนสูงสุด 5 อันดับ</div>
+    <div id="top5List"></div>
+  </div>
+</div>
+
+<!-- SEARCH PAGE -->
+<div class="search-page" id="page-search">
+  <div class="section-header" style="margin-bottom:12px"><div class="section-title">ผลการค้นหา</div><span class="see-all" id="searchCount"></span></div>
+  <div class="movie-grid" id="searchGrid"></div>
+  <div id="searchEmpty" style="display:none;color:var(--muted);font-size:13px;padding:20px 0">ไม่พบหนังที่ค้นหา</div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" onclick="closeMBg(event)">
+  <div class="modal">
+    <div class="modal-close" onclick="closeModal()">✕</div>
+    <div class="modal-hero">
+      <img id="mHeroBg" src="" alt="">
+      <div class="modal-hero-overlay"></div>
+      <div class="modal-poster-sm"><img id="mPoster" src="" alt=""></div>
+    </div>
+    <div class="modal-body">
+      <div class="modal-title-row">
+        <h3 id="mTitle"></h3>
+        <div class="modal-tags" id="mTags"></div>
+      </div>
+      <div class="modal-stats">
+        <div class="stat"><div class="stat-val" id="mRat"></div><div class="stat-lbl">IMDB</div></div>
+        <div class="stat"><div class="stat-val" id="mYr"></div><div class="stat-lbl">ปี</div></div>
+        <div class="stat"><div class="stat-val" id="mDr"></div><div class="stat-lbl">ระยะเวลา</div></div>
+        <div class="stat"><div class="stat-val" id="mLg"></div><div class="stat-lbl">ภาษา</div></div>
+      </div>
+      <p class="modal-desc" id="mDesc"></p>
+      <div class="cast-title">นักแสดง</div>
+      <div class="cast-list" id="mCast"></div>
+      <div class="user-rating">
+        <div class="ur-title">ให้คะแนนหนังเรื่องนี้</div>
+        <div class="stars" id="mStars"></div>
+        <div class="ur-msg" id="mUrMsg"></div>
+      </div>
+      <div class="similar-title">หนังที่คล้ายกัน</div>
+      <div class="similar-row" id="mSimilar"></div>
+      <div class="modal-actions" style="margin-top:14px">
+        <button class="modal-btn-play" onclick="showToast('กำลังโหลด...');closeModal()">▶ ดูเลย</button>
+        <button class="modal-btn-sm" id="mFavBtn" onclick="toggleFavModal()">♡</button>
+        <button class="modal-btn-sm" onclick="showToast('คัดลอกลิงก์แล้ว! 🔗')">⎙</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<footer>
+  <div class="logo" style="font-size:14px">CINEMAX</div>
+  <span id="footerInfo">© 2026 · ดูหนังออนไลน์</span>
+  <span style="color:var(--gold)">JavaScript</span>
+</footer>
+</div>
+
+<script>
+const T="https://image.tmdb.org/t/p/";
+const PIE_COLORS=["#C9A84C","#4A9EE8","#D94040","#2ECC71","#A855F7","#FF8C00","#EC4899","#14B8A6","#F59E0B"];
+
+const movies=[
+  {id:1,title:"Dune: Part Two",year:2024,dur:"2h 46m",rating:8.5,genre:"Sci-Fi",new:false,top:true,lang:"EN",director:"Denis Villeneuve",cast:["Timothée Chalamet","Zendaya","Rebecca Ferguson"],poster:"w500/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg",bg:"w1280/8b8R8l88Qje9dn9OE8PY05Nxl1X.jpg",desc:"Paul Atreides ร่วมมือกับ Chani และ Fremen สู่เส้นทางแห่งการแก้แค้นและชะตากรรม"},
+  {id:2,title:"Oppenheimer",year:2023,dur:"3h 0m",rating:8.9,genre:"ดราม่า",new:false,top:true,lang:"EN",director:"Christopher Nolan",cast:["Cillian Murphy","Emily Blunt","Matt Damon"],poster:"w500/8Gxv8gSFCU0XGDykEGv7zR1n2ua.jpg",bg:"w1280/rLb2cwF3Phyb285ds5HMjRERoAB.jpg",desc:"เรื่องราวของ J. Robert Oppenheimer ผู้สร้างระเบิดปรมาณูในสงครามโลกครั้งที่สอง"},
+  {id:3,title:"Inception",year:2010,dur:"2h 28m",rating:8.8,genre:"Sci-Fi",new:false,top:true,lang:"EN",director:"Christopher Nolan",cast:["Leonardo DiCaprio","Joseph Gordon-Levitt","Elliot Page"],poster:"w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",bg:"w1280/s2bT29y0ngXxxu2IA8AOzzXTRhd.jpg",desc:"Dom Cobb ขโมยความลับจากจิตใต้สำนึกของคนอื่นในความฝัน"},
+  {id:4,title:"The Batman",year:2022,dur:"2h 56m",rating:7.8,genre:"แอ็กชัน",new:false,top:true,lang:"EN",director:"Matt Reeves",cast:["Robert Pattinson","Zoë Kravitz","Paul Dano"],poster:"w500/74xTEgt7R36Fpooo50r9T25onhq.jpg",bg:"w1280/b0PlSFdDwbyK0cf5RxwDpaOJQvQ.jpg",desc:"แบทแมนมืดหม่นสืบสวนคดีฆาตกรรมต่อเนื่องในเมืองกอธแธม"},
+  {id:5,title:"Talk to Me",year:2023,dur:"1h 35m",rating:7.1,genre:"สยองขวัญ",new:false,top:false,lang:"EN",director:"Danny Philippou",cast:["Sophie Wilde","Alexandra Jensen","Joe Bird"],poster:"w500/kdPMUkaywIfLZLdCtIlBUK7NMJN.jpg",bg:"w1280/kdPMUkaywIfLZLdCtIlBUK7NMJN.jpg",desc:"วัยรุ่นเรียกวิญญาณด้วยมือเทียน ความสนุกกลายเป็นฝันร้าย"},
+  {id:6,title:"Past Lives",year:2023,dur:"1h 46m",rating:7.9,genre:"โรแมนติก",new:false,top:false,lang:"KR",director:"Celine Song",cast:["Greta Lee","Teo Yoo","John Magaro"],poster:"w500/k3waqVXSnw8cFXQXhqcSbMHBkh.jpg",bg:"w1280/k3waqVXSnw8cFXQXhqcSbMHBkh.jpg",desc:"สองเพื่อนวัยเด็กพบกันอีกครั้งหลัง 20 ปี พร้อมความรู้สึกที่ยังคงอยู่"},
+  {id:7,title:"Killers of the Flower Moon",year:2023,dur:"3h 26m",rating:7.7,genre:"ดราม่า",new:false,top:true,lang:"EN",director:"Martin Scorsese",cast:["Leonardo DiCaprio","Lily Gladstone","Robert De Niro"],poster:"w500/dB6eSECEMFRFJbOGMJkJGRFHCiS.jpg",bg:"w1280/1X7vow16X7CnCoD9f9KlykMIAW5.jpg",desc:"โศกนาฏกรรมชนเผ่าโอเซจในสหรัฐอเมริกายุค 1920s"},
+  {id:8,title:"Alien: Romulus",year:2024,dur:"1h 59m",rating:7.3,genre:"สยองขวัญ",new:true,top:true,lang:"EN",director:"Fede Álvarez",cast:["Cailee Spaeny","David Jonsson","Archie Renaux"],poster:"w500/xRd1eJIDe7JHO5KFZNgphy7vUj1.jpg",bg:"w1280/xRd1eJIDe7JHO5KFZNgphy7vUj1.jpg",desc:"นักล่าอาณานิคมพบสิ่งมีชีวิตลึกลับบนสถานีอวกาศร้าง"},
+  {id:9,title:"Deadpool & Wolverine",year:2024,dur:"2h 7m",rating:7.8,genre:"แอ็กชัน",new:true,top:true,lang:"EN",director:"Shawn Levy",cast:["Ryan Reynolds","Hugh Jackman","Emma Corrin"],poster:"w500/8cdWjvZQUExUUTzyp4t6EDMubfO.jpg",bg:"w1280/yDHYTfA3R0jFYba16jBB1ef8oIt.jpg",desc:"Deadpool เดินทางข้ามจักรวาลพร้อม Wolverine ในภารกิจสุดบ้า"},
+  {id:10,title:"Poor Things",year:2023,dur:"2h 21m",rating:7.9,genre:"ตลก",new:false,top:true,lang:"EN",director:"Yorgos Lanthimos",cast:["Emma Stone","Mark Ruffalo","Willem Dafoe"],poster:"w500/kCGlIMHnOm8JPXq3rXM6c5wMxcT.jpg",bg:"w1280/bQS43HSCCdnAFBGOkEAfFJ7k7n7.jpg",desc:"ผลงานแปลกประหลาดว่าด้วยการเกิดใหม่และการค้นพบตัวเอง"},
+  {id:11,title:"The Holdovers",year:2023,dur:"2h 13m",rating:7.9,genre:"ดราม่า",new:false,top:false,lang:"EN",director:"Alexander Payne",cast:["Paul Giamatti","Dominic Sessa","Da'Vine Joy Randolph"],poster:"w500/VHmqaFQWWnPxaWMsIDqK3HkAVAP.jpg",bg:"w1280/VHmqaFQWWnPxaWMsIDqK3HkAVAP.jpg",desc:"ครูเคร่งครัดดูแลนักเรียนไม่มีที่ไปช่วงคริสต์มาส สัมพันธ์ที่ไม่คาดฝัน"},
+  {id:12,title:"Twisters",year:2024,dur:"2h 2m",rating:6.7,genre:"แอ็กชัน",new:true,top:false,lang:"EN",director:"Lee Isaac Chung",cast:["Daisy Edgar-Jones","Glen Powell","Anthony Ramos"],poster:"w500/pjnD08FlMAIXsfOLKQbIt9sXKEQ.jpg",bg:"w1280/pjnD08FlMAIXsfOLKQbIt9sXKEQ.jpg",desc:"นักล่าพายุเผชิญหน้ากับทอร์นาโดร้ายแรงที่ไม่เคยเห็นมาก่อน"},
+  {id:13,title:"Inside Out 2",year:2024,dur:"1h 40m",rating:7.8,genre:"แอนิเมชัน",new:true,top:true,lang:"EN",director:"Kelsey Mann",cast:["Amy Poehler","Maya Hawke","Kensington Tallman"],poster:"w500/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg",bg:"w1280/xg27NrXi7VXCGUr7MlcbgrZR65i.jpg",desc:"Riley เผชิญอารมณ์ใหม่ในวัยรุ่น ขณะ Joy ต้องต่อสู้กับ Anxiety"},
+  {id:14,title:"The Wild Robot",year:2024,dur:"1h 42m",rating:8.3,genre:"แอนิเมชัน",new:true,top:true,lang:"EN",director:"Chris Sanders",cast:["Lupita Nyong'o","Pedro Pascal","Kit Connor"],poster:"w500/wTnV3PCVW5O92JMrFvvrRcV39RU.jpg",bg:"w1280/wTnV3PCVW5O92JMrFvvrRcV39RU.jpg",desc:"หุ่นยนต์ตื่นบนเกาะกลางทะเล ต้องดูแลลูกห่านกำพร้า"},
+  {id:15,title:"Gladiator II",year:2024,dur:"2h 28m",rating:7.2,genre:"แอ็กชัน",new:true,top:true,lang:"EN",director:"Ridley Scott",cast:["Paul Mescal","Pedro Pascal","Denzel Washington"],poster:"w500/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg",bg:"w1280/2cxhvwyEwRlysAmRH4iodkvo0z5.jpg",desc:"ทายาทของ Marcus Aurelius กลับมาต่อสู้ในโคลอสเซียม"},
+  {id:16,title:"A Quiet Place: Day One",year:2024,dur:"1h 39m",rating:7.1,genre:"สยองขวัญ",new:true,top:false,lang:"EN",director:"Michael Sarnoski",cast:["Lupita Nyong'o","Joseph Quinn","Alex Wolff"],poster:"w500/yrpPYKijwdMHyTGIOd1iK1h0Wo6.jpg",bg:"w1280/yrpPYKijwdMHyTGIOd1iK1h0Wo6.jpg",desc:"วันแรกของการรุกรานโดยสิ่งมีชีวิตล่าด้วยเสียง ในนิวยอร์ก"},
+  {id:17,title:"Longlegs",year:2024,dur:"1h 41m",rating:5.8,genre:"สยองขวัญ",new:true,top:false,lang:"EN",director:"Osgood Perkins",cast:["Maika Monroe","Nicolas Cage","Blair Underwood"],poster:"w500/lAXzfHnEMEHaqhE4MnYIAOGjkuD.jpg",bg:"w1280/lAXzfHnEMEHaqhE4MnYIAOGjkuD.jpg",desc:"FBI สืบสวนฆาตกรต่อเนื่องที่ทิ้งข้อความเข้ารหัสปริศนา"},
+  {id:18,title:"Challengers",year:2024,dur:"2h 11m",rating:7.4,genre:"โรแมนติก",new:false,top:false,lang:"EN",director:"Luca Guadagnino",cast:["Zendaya","Josh O'Connor","Mike Faist"],poster:"w500/H6vke96LDvy2bFV2Z7bNBQoxuUX.jpg",bg:"w1280/H6vke96LDvy2bFV2Z7bNBQoxuUX.jpg",desc:"สามเส้นสัมพันธ์นักเทนนิส ตัดสลับอดีตและปัจจุบัน"},
+  {id:19,title:"Kingdom of the Planet of the Apes",year:2024,dur:"2h 25m",rating:7.1,genre:"Sci-Fi",new:true,top:false,lang:"EN",director:"Wes Ball",cast:["Owen Teague","Freya Allan","Kevin Durand"],poster:"w500/gKkl37BQuKTanygYQG1pyYgLVgf.jpg",bg:"w1280/fqv8v6AycXKsivp1T5yKtLbGXce.jpg",desc:"หลายชั่วอายุหลังซีซาร์ ลิงหนุ่มออกเดินทางสู้เพื่ออาณาจักร"},
+  {id:20,title:"Interstellar",year:2014,dur:"2h 49m",rating:8.7,genre:"Sci-Fi",new:false,top:true,lang:"EN",director:"Christopher Nolan",cast:["Matthew McConaughey","Anne Hathaway","Jessica Chastain"],poster:"w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",bg:"w1280/xJHokMbljvjADYdit5fK5VQsXEG.jpg",desc:"นักบินอวกาศผ่านหลุมหนอนหาโลกใหม่ให้มนุษยชาติ"},
+  {id:21,title:"Everything Everywhere All at Once",year:2022,dur:"2h 19m",rating:7.8,genre:"แอ็กชัน",new:false,top:true,lang:"EN",director:"The Daniels",cast:["Michelle Yeoh","Ke Huy Quan","Jamie Lee Curtis"],poster:"w500/w3LxiVYdWWRvEVdn5RYq6jIqkb1.jpg",bg:"w1280/ss0Os3uWJfQAENILHZUdX8Tt1OC.jpg",desc:"แม่บ้านสำรวจจักรวาลคู่ขนานเพื่อช่วยโลก"},
+  {id:22,title:"The Substance",year:2024,dur:"2h 21m",rating:7.2,genre:"สยองขวัญ",new:true,top:false,lang:"EN",director:"Coralie Fargeat",cast:["Demi Moore","Margaret Qualley","Dennis Quaid"],poster:"w500/lqoMzCcZYEFK729d6qzt349fB4o.jpg",bg:"w1280/lqoMzCcZYEFK729d6qzt349fB4o.jpg",desc:"ดาราฟิตเนสค้นพบยาสร้างตัวตนใหม่ที่สมบูรณ์แบบกว่า"},
+  {id:23,title:"Moana 2",year:2024,dur:"1h 40m",rating:6.7,genre:"แอนิเมชัน",new:true,top:true,lang:"EN",director:"Jason Hand",cast:["Auli'i Cravalho","Dwayne Johnson","Alan Tudyk"],poster:"w500/yh64qvLiamJXboLIu60xerfEjYj.jpg",bg:"w1280/yh64qvLiamJXboLIu60xerfEjYj.jpg",desc:"โมอาน่าออกเดินทางสู่ดินแดนโพลีนีเซียที่ยังไม่มีใครบุกเบิก"},
+  {id:24,title:"Wicked",year:2024,dur:"2h 40m",rating:7.7,genre:"ดราม่า",new:true,top:true,lang:"EN",director:"Jon M. Chu",cast:["Cynthia Erivo","Ariana Grande","Jeff Goldblum"],poster:"w500/c5Tqxeo1UpBvnAc3csUm7j3hlQl.jpg",bg:"w1280/c5Tqxeo1UpBvnAc3csUm7j3hlQl.jpg",desc:"ก่อนพ่อมดแห่งออซ มิตรภาพแม่มดสองคนที่มีชะตากรรมต่างกัน"},
+  {id:25,title:"The Dark Knight",year:2008,dur:"2h 32m",rating:9.0,genre:"แอ็กชัน",new:false,top:true,lang:"EN",director:"Christopher Nolan",cast:["Christian Bale","Heath Ledger","Aaron Eckhart"],poster:"w500/qJ2tW6WMUDux911r6m7haRef0WH.jpg",bg:"w1280/nMKdUFKyBqLFRMFf65DhHVMWzXU.jpg",desc:"แบทแมนเผชิญหน้าโจ๊กเกอร์ผู้ก่อความโกลาหลในเมืองกอธแธม"},
+  {id:26,title:"Parasite",year:2019,dur:"2h 12m",rating:8.5,genre:"ดราม่า",new:false,top:true,lang:"KR",director:"Bong Joon-ho",cast:["Song Kang-ho","Lee Sun-kyun","Cho Yeo-jeong"],poster:"w500/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",bg:"w1280/ApiBzeaa95TNYliSbQ8pJv4Fje7.jpg",desc:"ครอบครัวยากจนแทรกซึมเข้าสู่บ้านของเศรษฐีอย่างชาญฉลาด"},
+  {id:27,title:"Avengers: Endgame",year:2019,dur:"3h 1m",rating:8.4,genre:"แอ็กชัน",new:false,top:true,lang:"EN",director:"Russo Brothers",cast:["Robert Downey Jr.","Chris Evans","Scarlett Johansson"],poster:"w500/or06FN3Dka5tukK1e9sl16pB3iy.jpg",bg:"w1280/7RyHsO4yDXtBv1zUU3mTpHeQ0d5.jpg",desc:"อเวนเจอร์สรวมพลครั้งสุดท้ายต่อกรทานอสเพื่อชะตาจักรวาล"},
+  {id:28,title:"Hereditary",year:2018,dur:"2h 7m",rating:7.3,genre:"สยองขวัญ",new:false,top:false,lang:"EN",director:"Ari Aster",cast:["Toni Collette","Milly Shapiro","Gabriel Byrne"],poster:"w500/p3ZpFwTNhxnkXsIQfhJQ3Cd5NxN.jpg",bg:"w1280/p3ZpFwTNhxnkXsIQfhJQ3Cd5NxN.jpg",desc:"หลังคุณยายเสียชีวิต ครอบครัวค้นพบมรดกลึกลับและน่าสะพรึง"},
+  {id:29,title:"La La Land",year:2016,dur:"2h 8m",rating:8.0,genre:"โรแมนติก",new:false,top:true,lang:"EN",director:"Damien Chazelle",cast:["Ryan Gosling","Emma Stone","John Legend"],poster:"w500/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg",bg:"w1280/nadTlnTE4DdoxNeil3xMBECErN6.jpg",desc:"นักดนตรีและนักแสดงฝันใหญ่ในลอสแองเจลิส แต่ความรักท้าทายความฝัน"},
+  {id:30,title:"The Matrix",year:1999,dur:"2h 16m",rating:8.7,genre:"Sci-Fi",new:false,top:true,lang:"EN",director:"Wachowski Sisters",cast:["Keanu Reeves","Laurence Fishburne","Carrie-Anne Moss"],poster:"w500/f89U3ADr1oiB1s9GkdPOEpXUk5H.jpg",bg:"w1280/hEpWvX6Bp79eLxY1kX5ZZJcme6U.jpg",desc:"แฮกเกอร์ค้นพบว่าชีวิตทั้งหมดเป็นเพียงการจำลอง"},
+  {id:31,title:"Spirited Away",year:2001,dur:"2h 5m",rating:8.6,genre:"แอนิเมชัน",new:false,top:true,lang:"JP",director:"Hayao Miyazaki",cast:["Daveigh Chase","Suzanne Pleshette","Miyu Irino"],poster:"w500/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",bg:"w1280/mSDsSDwaP3E7dEfUPWy4J0djt4O.jpg",desc:"เด็กหญิงหลงเข้าสู่โลกวิญญาณ ต้องทำงานเพื่อช่วยพ่อแม่กลับคืน"},
+  {id:32,title:"Joker",year:2019,dur:"2h 2m",rating:8.4,genre:"ดราม่า",new:false,top:true,lang:"EN",director:"Todd Phillips",cast:["Joaquin Phoenix","Robert De Niro","Zazie Beetz"],poster:"w500/udDclJoHjfjb8Ekgsd4FDteOkCU.jpg",bg:"w1280/n6bUvigpRFqSwmPp1m25gFZlST0.jpg",desc:"ตลกผู้ล้มเหลวกลายเป็นสัญลักษณ์แห่งความโกลาหลในเมือง"},
+  {id:33,title:"Barbie",year:2023,dur:"1h 54m",rating:6.9,genre:"ตลก",new:false,top:false,lang:"EN",director:"Greta Gerwig",cast:["Margot Robbie","Ryan Gosling","America Ferrera"],poster:"w500/iuFNMS8U5cb6xfzi51Dbkovj7vM.jpg",bg:"w1280/nHf61UzkfFno5X1ofIjuBA4MVZ0.jpg",desc:"บาร์บี้เดินทางจากบาร์บี้แลนด์สู่โลกจริงเพื่อค้นหาความหมายของชีวิต"},
+  {id:34,title:"Top Gun: Maverick",year:2022,dur:"2h 10m",rating:8.3,genre:"แอ็กชัน",new:false,top:true,lang:"EN",director:"Joseph Kosinski",cast:["Tom Cruise","Miles Teller","Jennifer Connelly"],poster:"w500/62HCnUTziyWcpDaBO2i1DX17ljH.jpg",bg:"w1280/AkB2KnAUbYCOLm0rQn7MXDfO1vT.jpg",desc:"Maverick กลับมาฝึกนักบินรุ่นใหม่ในภารกิจเป็นไปไม่ได้"},
+  {id:35,title:"Shrek",year:2001,dur:"1h 30m",rating:7.9,genre:"แอนิเมชัน",new:false,top:false,lang:"EN",director:"Andrew Adamson",cast:["Mike Myers","Eddie Murphy","Cameron Diaz"],poster:"w500/iB64vpL3dIObOtMZgX3RqdVdQDc.jpg",bg:"w1280/iB64vpL3dIObOtMZgX3RqdVdQDc.jpg",desc:"ยักษ์ขี้โกรธต้องช่วยเจ้าหญิงแลกกับการได้หนองกลับคืน"},
+  {id:36,title:"Your Name",year:2016,dur:"1h 46m",rating:8.4,genre:"โรแมนติก",new:false,top:true,lang:"JP",director:"Makoto Shinkai",cast:["Ryunosuke Kamiki","Mone Kamishiraishi"],poster:"w500/q719jXXEzOoYaps6babgKnONONX.jpg",bg:"w1280/mMtUybQ6hL24FXo0F3Z4j2KG7kZ.jpg",desc:"หนุ่มสาวสลับร่างกันในความฝัน ค้นหากันในโลกแห่งความจริง"},
+  {id:37,title:"Get Out",year:2017,dur:"1h 44m",rating:7.7,genre:"สยองขวัญ",new:false,top:false,lang:"EN",director:"Jordan Peele",cast:["Daniel Kaluuya","Allison Williams","Bradley Whitford"],poster:"w500/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg",bg:"w1280/tFXcEccSQMf3lfhfXKSU9iRBpa3.jpg",desc:"ชายผิวดำไปเยี่ยมครอบครัวแฟนสาว ค้นพบความลับสุดสยอง"},
+  {id:38,title:"Coco",year:2017,dur:"1h 45m",rating:8.4,genre:"แอนิเมชัน",new:false,top:true,lang:"EN",director:"Lee Unkrich",cast:["Anthony Gonzalez","Gael García Bernal","Benjamin Bratt"],poster:"w500/gGEsBPAijhVUFoiNpgZXqRVWJt2.jpg",bg:"w1280/askg3SMvhqEl4OL52YuvdtY40Yb.jpg",desc:"เด็กชายผู้รักดนตรีผจญภัยในดินแดนคนตาย เพื่อตามหาอดีต"},
+  {id:39,title:"Whiplash",year:2014,dur:"1h 47m",rating:8.5,genre:"ดราม่า",new:false,top:true,lang:"EN",director:"Damien Chazelle",cast:["Miles Teller","J.K. Simmons","Paul Reiser"],poster:"w500/7fn624j5lj3xTme2SgiLCeuedmO.jpg",bg:"w1280/fRGxZuo7jJUWQsVg9PREb98Aclp.jpg",desc:"นักตีกลองมุ่งมั่นฝึกฝนภายใต้ครูดุโหดสุดขีด"},
+  {id:40,title:"Dune: Part One",year:2021,dur:"2h 35m",rating:8.0,genre:"Sci-Fi",new:false,top:true,lang:"EN",director:"Denis Villeneuve",cast:["Timothée Chalamet","Rebecca Ferguson","Oscar Isaac"],poster:"w500/d5NXSklpcKoE5hpqOaCKd5bMnAK.jpg",bg:"w1280/jYEW5xZkZk2WTrdbMGAPFuBqbDc.jpg",desc:"Paul Atreides เดินทางสู่ดาวทะเลทรายเพื่อรับชะตากรรมของจักรวาล"},
+  {id:41,title:"The Menu",year:2022,dur:"1h 47m",rating:7.2,genre:"ตลก",new:false,top:false,lang:"EN",director:"Mark Mylod",cast:["Ralph Fiennes","Anya Taylor-Joy","Nicholas Hoult"],poster:"w500/v9hwhd40IqxhsXFqM6XeomeOD18.jpg",bg:"w1280/v9hwhd40IqxhsXFqM6XeomeOD18.jpg",desc:"ค่ำคืนอาหารสุดหรูกลับกลายเป็นสถานการณ์สยองขวัญ"},
+  {id:42,title:"Nope",year:2022,dur:"2h 10m",rating:6.8,genre:"สยองขวัญ",new:false,top:false,lang:"EN",director:"Jordan Peele",cast:["Daniel Kaluuya","Keke Palmer","Steven Yeun"],poster:"w500/AcKVlWaNVVVFQwynSr988bwiy5F.jpg",bg:"w1280/AcKVlWaNVVVFQwynSr988bwiy5F.jpg",desc:"พี่น้องเจ้าของฟาร์มค้นพบสิ่งลึกลับในท้องฟ้าเหนือที่ดินพวกเขา"},
+  {id:43,title:"Spider-Man: Into the Spider-Verse",year:2018,dur:"1h 57m",rating:8.4,genre:"แอนิเมชัน",new:false,top:true,lang:"EN",director:"Bob Persichetti",cast:["Shameik Moore","Hailee Steinfeld","Jake Johnson"],poster:"w500/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",bg:"w1280/iiZZdoQBEYBv6id8su7ImL0oCbD.jpg",desc:"ไมลส์ โมราเลสรับบทแมงมุมท่ามกลางสไปเดอร์แมนจากหลายมิติ"},
+  {id:44,title:"Midsommar",year:2019,dur:"2h 28m",rating:7.1,genre:"สยองขวัญ",new:false,top:false,lang:"EN",director:"Ari Aster",cast:["Florence Pugh","Jack Reynor","Vilhelm Blomgren"],poster:"w500/7LEI8ulZzO5gy9Ww2NVCrKmHeDZ.jpg",bg:"w1280/7LEI8ulZzO5gy9Ww2NVCrKmHeDZ.jpg",desc:"คู่รักเดินทางสู่สวีเดนพบเทศกาลนอกโลกที่ซ่อนความสยอง"},
+  {id:45,title:"Mad Max: Fury Road",year:2015,dur:"2h 0m",rating:8.1,genre:"แอ็กชัน",new:false,top:true,lang:"EN",director:"George Miller",cast:["Tom Hardy","Charlize Theron","Nicholas Hoult"],poster:"w500/hA2ple9q4qnwxp3hKVNhroipsir.jpg",bg:"w1280/tbHtFe9OeQiXlGNHVnN2fH6xiU.jpg",desc:"ในโลกหลังหายนะ แม็กซ์ผนึกกำลังกับฟิวริโอซาหนีจากทรราช"},
+];
+
+const heroMovies=movies.filter(m=>m.top).slice(0,6);
+let heroIdx=0,heroTimer,currentGenre='ทั้งหมด',currentTab='all',currentSort='default',currentView='grid',currentModal=null,favorites=new Set(),userRatings={},prevPage='home';
+
+// HERO
+function buildHero(){
+  document.getElementById('heroSlides').innerHTML=heroMovies.map((m,i)=>`
+    <div class="hero-slide">
+      <img class="hero-bg-img" src="${T}${m.bg}" alt="" loading="${i>0?'lazy':'eager'}">
+      <div class="hero-overlay"></div>
+      <div class="hero-content">
+        <div class="hero-badge">${m.new?'ภาพยนตร์ใหม่':'แนะนำวันนี้'}</div>
+        <div class="hero-title">${m.title}</div>
+        <div class="hero-meta">
+          <span>${m.year}</span><span style="color:rgba(255,255,255,0.2)">|</span>
+          <span>${m.dur}</span><span style="color:rgba(255,255,255,0.2)">|</span>
+          <span style="color:var(--gold)">★ ${m.rating}</span><span style="color:rgba(255,255,255,0.2)">|</span>
+          <span>${m.genre}</span>
+        </div>
+        <p class="hero-desc">${m.desc}</p>
+        <div class="btn-group">
+          <button class="btn-play" onclick="openModal(${movies.indexOf(m)})">▶ เล่นเลย</button>
+          <button class="btn-info" onclick="openModal(${movies.indexOf(m)})">ℹ รายละเอียด</button>
+        </div>
+      </div>
+      <div class="hero-poster-wrap">
+        <div class="hero-poster"><img src="${T}${m.poster}" alt="${m.title}"></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('heroDots').innerHTML=heroMovies.map((_,i)=>`<div class="dot${i===0?' active':''}" onclick="goSlide(${i})"></div>`).join('');
+  startHeroTimer();
+}
+function goSlide(i){heroIdx=i;document.getElementById('heroSlides').style.transform=`translateX(-${i*100}%)`;document.querySelectorAll('.dot').forEach((d,j)=>d.classList.toggle('active',j===i))}
+function slideHero(dir){goSlide((heroIdx+dir+heroMovies.length)%heroMovies.length);clearInterval(heroTimer);startHeroTimer()}
+function startHeroTimer(){heroTimer=setInterval(()=>slideHero(1),4500)}
+
+// GENRE BAR
+function buildGenreBar(){
+  const genres=['ทั้งหมด',...[...new Set(movies.map(m=>m.genre))].sort()];
+  document.getElementById('genreBar').innerHTML=genres.map(g=>`<button class="genre-tab${g===currentGenre?' active':''}" onclick="filterGenre('${g}',this)">${g}</button>`).join('');
+}
+
+// TOP10
+function buildTop10(){
+  const top=movies.filter(m=>m.top).slice(0,12);
+  document.getElementById('top10Row').innerHTML=top.map((m,i)=>`
+    <div class="movie-card scroll-card" onclick="openModal(${movies.indexOf(m)})">
+      <div class="movie-poster-wrap">
+        <img src="${T}${m.poster}" alt="${m.title}" loading="lazy">
+        <div class="badge badge-top">#${i+1}</div>
+        <div class="movie-overlay"><div class="play-btn"><div class="play-tri"></div></div></div>
+        <div class="fav-btn${favorites.has(m.id)?' active':''}" onclick="toggleFav(event,${m.id})">${favorites.has(m.id)?'♥':'♡'}</div>
+      </div>
+      <div class="movie-title" style="width:120px">${m.title}</div>
+      <div class="movie-info"><span style="color:var(--gold)">★${m.rating}</span><span>${m.genre}</span></div>
+    </div>`).join('');
+}
+
+// MAIN GRID
+function getSortedFiltered(){
+  let list=currentGenre==='ทั้งหมด'?[...movies]:movies.filter(m=>m.genre===currentGenre);
+  if(currentTab==='toprated') list=list.filter(m=>m.rating>=7.5);
+  if(currentTab==='new') list=list.filter(m=>m.new);
+  if(currentTab==='classic') list=list.filter(m=>m.year<2015);
+  if(currentSort==='rating') list.sort((a,b)=>b.rating-a.rating);
+  else if(currentSort==='year_new') list.sort((a,b)=>b.year-a.year);
+  else if(currentSort==='year_old') list.sort((a,b)=>a.year-b.year);
+  else if(currentSort==='az') list.sort((a,b)=>a.title.localeCompare(b.title));
+  return list;
+}
+function renderMovies(){
+  const list=getSortedFiltered();
+  document.getElementById('resultCount').textContent=`${list.length} เรื่อง`;
+  const grid=document.getElementById('movieGrid');
+  grid.className='movie-grid'+(currentView==='list'?' list-view':'');
+  grid.innerHTML=list.map(m=>{
+    const idx=movies.indexOf(m);
+    return `<div class="movie-card" onclick="openModal(${idx})">
+      <div class="movie-poster-wrap">
+        <img src="${T}${m.poster}" alt="${m.title}" loading="lazy">
+        ${m.new?`<div class="badge badge-new">ใหม่</div>`:`<div class="badge badge-rating">★${m.rating}</div>`}
+        <div class="movie-overlay"><div class="play-btn"><div class="play-tri"></div></div></div>
+        <div class="fav-btn${favorites.has(m.id)?' active':''}" onclick="toggleFav(event,${m.id})">${favorites.has(m.id)?'♥':'♡'}</div>
+      </div>
+      ${currentView==='list'?`<div class="movie-info-block">
+        <div class="movie-title">${m.title}</div>
+        <div class="movie-info"><span style="color:var(--gold)">★${m.rating}</span><span>${m.year}</span><span>${m.genre}</span><span>${m.dur}</span></div>
+        <div class="list-desc">${m.desc}</div>
+      </div>`:`<div class="movie-title">${m.title}</div><div class="movie-info"><span>${m.year}</span><span>${m.genre}</span></div>`}
+    </div>`;}).join('');
+}
+
+function filterGenre(g,el){
+  currentGenre=g;
+  document.querySelectorAll('.genre-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderMovies();
+}
+function switchTab(t){
+  currentTab=t;
+  ['all','toprated','new','classic'].forEach(x=>document.getElementById('tab-'+x)?.classList.toggle('active',x===t));
+  renderMovies();
+}
+function sortMovies(v){currentSort=v;renderMovies()}
+function setView(v){
+  currentView=v;
+  document.getElementById('vgrid').classList.toggle('active',v==='grid');
+  document.getElementById('vlist').classList.toggle('active',v==='list');
+  renderMovies();
+}
+
+// SEARCH
+function onSearch(q){
+  const sq=q.trim().toLowerCase();
+  if(!sq){goPage(prevPage);return}
+  prevPage=prevPage==='search'?'home':prevPage;
+  showPages('search');
+  const res=movies.filter(m=>m.title.toLowerCase().includes(sq)||m.genre.includes(q)||m.cast.some(c=>c.toLowerCase().includes(sq))||m.director.toLowerCase().includes(sq));
+  document.getElementById('searchCount').textContent=res.length+' เรื่อง';
+  document.getElementById('searchEmpty').style.display=res.length?'none':'block';
+  document.getElementById('searchGrid').innerHTML=res.map(m=>`
+    <div class="movie-card" onclick="openModal(${movies.indexOf(m)})">
+      <div class="movie-poster-wrap">
+        <img src="${T}${m.poster}" alt="${m.title}" loading="lazy">
+        <div class="badge badge-rating">★${m.rating}</div>
+        <div class="movie-overlay"><div class="play-btn"><div class="play-tri"></div></div></div>
+      </div>
+      <div class="movie-title">${m.title}</div>
+      <div class="movie-info"><span>${m.year}</span><span>${m.genre}</span></div>
+    </div>`).join('');
+}
+
+// PAGES
+function showPages(p){
+  ['home','trending','watchlist','stats','search'].forEach(x=>{
+    const el=document.getElementById('page-'+x);
+    if(el) el.style.display=x===p?'block':'none';
+  });
+  document.querySelectorAll('.nav-links span').forEach(s=>s.classList.remove('active'));
+  const nav=document.getElementById('nav-'+p);
+  if(nav) nav.classList.add('active');
+}
+function goPage(p){
+  if(p!=='search'){document.getElementById('searchInput').value='';prevPage=p}
+  showPages(p);
+  if(p==='watchlist') renderWatchlist();
+  if(p==='stats') renderStats();
+  if(p==='trending') renderTrending();
+}
+
+// TRENDING
+function renderTrending(){
+  const sorted=[...movies].sort((a,b)=>b.rating-a.rating).slice(0,20);
+  document.getElementById('trendGrid').innerHTML=sorted.map(m=>`
+    <div class="movie-card" onclick="openModal(${movies.indexOf(m)})">
+      <div class="movie-poster-wrap">
+        <img src="${T}${m.poster}" alt="${m.title}" loading="lazy">
+        <div class="badge badge-hot">🔥</div>
+        <div class="movie-overlay"><div class="play-btn"><div class="play-tri"></div></div></div>
+        <div class="fav-btn${favorites.has(m.id)?' active':''}" onclick="toggleFav(event,${m.id})">${favorites.has(m.id)?'♥':'♡'}</div>
+      </div>
+      <div class="movie-title">${m.title}</div>
+      <div class="movie-info"><span style="color:var(--gold)">★${m.rating}</span><span>${m.genre}</span></div>
+    </div>`).join('');
+}
+
+// WATCHLIST
+function renderWatchlist(){
+  const favs=movies.filter(m=>favorites.has(m.id));
+  document.getElementById('wlCount').textContent=favs.length+' เรื่อง';
+  document.getElementById('wlEmpty').style.display=favs.length?'none':'block';
+  document.getElementById('wlGrid').innerHTML=favs.map(m=>`
+    <div class="movie-card" onclick="openModal(${movies.indexOf(m)})">
+      <div class="movie-poster-wrap">
+        <img src="${T}${m.poster}" alt="${m.title}" loading="lazy">
+        <div class="badge badge-rating">★${m.rating}</div>
+        <div class="movie-overlay"><div class="play-btn"><div class="play-tri"></div></div></div>
+        <div class="fav-btn active" onclick="toggleFav(event,${m.id})">♥</div>
+      </div>
+      <div class="movie-title">${m.title}</div>
+      <div class="movie-info"><span>${m.year}</span><span>${m.genre}</span></div>
+    </div>`).join('');
+}
+
+// STATS
+function renderStats(){
+  document.getElementById('s-total').textContent=movies.length;
+  document.getElementById('s-fav').textContent=favorites.size;
+  document.getElementById('s-avg').textContent=(movies.reduce((a,m)=>a+m.rating,0)/movies.length).toFixed(1);
+  document.getElementById('s-rated').textContent=Object.keys(userRatings).length;
+  const genres=[...new Set(movies.map(m=>m.genre))];
+  document.getElementById('genreScores').innerHTML=genres.map(g=>{
+    const gm=movies.filter(m=>m.genre===g);
+    const avg=(gm.reduce((a,m)=>a+m.rating,0)/gm.length).toFixed(1);
+    return `<div class="score-row"><span class="score-label">${g}</span><div class="score-bar"><div class="score-fill" style="width:${Math.round(avg/10*100)}%"></div></div><span class="score-num">${avg}</span></div>`;
+  }).join('');
+  document.getElementById('genrePie').innerHTML=genres.map((g,i)=>{
+    const cnt=movies.filter(m=>m.genre===g).length;
+    return `<div class="pie-item"><div class="pie-dot" style="background:${PIE_COLORS[i%PIE_COLORS.length]}"></div><span>${g} (${cnt})</span></div>`;
+  }).join('');
+  const top5=[...movies].sort((a,b)=>b.rating-a.rating).slice(0,5);
+  document.getElementById('top5List').innerHTML=top5.map((m,i)=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:0.5px solid rgba(255,255,255,0.05);cursor:pointer" onclick="openModal(${movies.indexOf(m)})">
+      <span style="font-size:11px;color:var(--muted);width:16px">${i+1}</span>
+      <img src="${T}${m.poster}" style="width:32px;height:48px;border-radius:4px;object-fit:cover">
+      <div style="flex:1"><div style="font-size:12px;font-weight:500">${m.title}</div><div style="font-size:10px;color:var(--muted)">${m.year} · ${m.genre}</div></div>
+      <span style="color:var(--gold);font-size:12px">★${m.rating}</span>
+    </div>`).join('');
+}
+
+// FAV
+function toggleFav(e,id){
+  e.stopPropagation();
+  favorites.has(id)?(favorites.delete(id),showToast('ลบจากรายการโปรด')):(favorites.add(id),showToast('เพิ่มในรายการโปรด ❤️'));
+  buildTop10();renderMovies();
+  const wp=document.getElementById('page-watchlist');
+  if(wp.style.display!=='none') renderWatchlist();
+  if(document.getElementById('page-stats').style.display!=='none') renderStats();
+}
+function toggleFavModal(){
+  if(currentModal===null) return;
+  const id=movies[currentModal].id;
+  favorites.has(id)?(favorites.delete(id),showToast('ลบจากรายการโปรด')):(favorites.add(id),showToast('เพิ่มในรายการโปรด ❤️'));
+  document.getElementById('mFavBtn').textContent=favorites.has(id)?'♥':'♡';
+  buildTop10();renderMovies();
+}
+
+// MODAL
+function openModal(i){
+  const m=movies[i]; currentModal=i;
+  document.getElementById('mHeroBg').src=T+m.bg;
+  document.getElementById('mPoster').src=T+m.poster;
+  document.getElementById('mTitle').textContent=m.title;
+  document.getElementById('mDesc').textContent=m.desc;
+  document.getElementById('mRat').textContent='★'+m.rating;
+  document.getElementById('mYr').textContent=m.year;
+  document.getElementById('mDr').textContent=m.dur;
+  document.getElementById('mLg').textContent=m.lang;
+  document.getElementById('mTags').innerHTML=`<span class="tag">${m.genre}</span>${m.new?'<span class="tag red">ใหม่</span>':''}<span class="tag" style="background:rgba(74,158,232,0.12);color:var(--blue);border-color:rgba(74,158,232,0.3)">${m.director}</span>`;
+  document.getElementById('mCast').innerHTML=m.cast.map(c=>`<span class="cast-tag">${c}</span>`).join('');
+  document.getElementById('mFavBtn').textContent=favorites.has(m.id)?'♥':'♡';
+  // Stars
+  const ur=userRatings[m.id]||0;
+  document.getElementById('mStars').innerHTML=[1,2,3,4,5].map(s=>`<span class="star-btn${ur>=s?' lit':''}" onclick="rateMovie(${i},${s})" onmouseover="hoverStars(${s})" onmouseout="unhoverStars(${ur})">★</span>`).join('');
+  document.getElementById('mUrMsg').textContent=ur?`คุณให้ ${ur} ดาว`:'';
+  // Similar
+  const similar=movies.filter(x=>x.genre===m.genre&&x.id!==m.id).slice(0,6);
+  document.getElementById('mSimilar').innerHTML=similar.map(x=>`
+    <div class="sim-card" onclick="openModal(${movies.indexOf(x)})">
+      <div class="sim-poster"><img src="${T}${x.poster}" alt="${x.title}" loading="lazy"></div>
+      <div class="sim-title">${x.title}</div>
+    </div>`).join('');
+  document.getElementById('modal').classList.add('open');
+}
+function rateMovie(i,s){
+  userRatings[movies[i].id]=s;
+  document.querySelectorAll('.star-btn').forEach((el,j)=>el.classList.toggle('lit',j<s));
+  document.getElementById('mUrMsg').textContent=`คุณให้ ${s} ดาว ⭐`;
+  showToast(`ให้คะแนน ${s}/5 ดาว!`);
+  if(document.getElementById('page-stats').style.display!=='none') renderStats();
+}
+function hoverStars(s){document.querySelectorAll('.star-btn').forEach((el,j)=>el.classList.toggle('lit',j<s))}
+function unhoverStars(ur){document.querySelectorAll('.star-btn').forEach((el,j)=>el.classList.toggle('lit',j<ur))}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function closeMBg(e){if(e.target.id==='modal')closeModal()}
+
+// TOAST
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(t._timer);t._timer=setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+// FOOTER
+function updateFooter(){document.getElementById('footerInfo').textContent=`© 2026 · ${movies.length} เรื่อง · ${favorites.size} รายการโปรด`}
+setInterval(updateFooter,1000);
+
+// INIT
+buildHero();buildGenreBar();buildTop10();renderMovies();goPage('home');
+</script>
