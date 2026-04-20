@@ -1,0 +1,930 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineVault — ดูหนังออนไลน์</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --gold: #e8b84b;
+    --gold2: #f5d080;
+    --text: #f0ede6;
+    --muted: #7a7a8c;
+    --accent: #c0392b;
+    --border: rgba(232,184,75,0.15);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 3rem;
+    background: linear-gradient(to bottom, rgba(10,10,15,0.98), transparent);
+    border-bottom: 0.5px solid var(--border);
+  }
+  .logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.6rem;
+    font-weight: 900;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+  .logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 2rem; list-style: none; }
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.88rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover, .nav-links a.active { color: var(--gold); }
+  .nav-right { display: flex; align-items: center; gap: 1rem; }
+  .search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 24px;
+    padding: 0.45rem 1rem;
+  }
+  .search-box input {
+    background: none;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    width: 180px;
+  }
+  .search-box input::placeholder { color: var(--muted); }
+  .search-icon { color: var(--muted); font-size: 1rem; }
+  .btn-login {
+    background: var(--gold);
+    color: #0a0a0f;
+    border: none;
+    border-radius: 20px;
+    padding: 0.45rem 1.3rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-login:hover { background: var(--gold2); }
+
+  /* HERO */
+  .hero {
+    position: relative;
+    height: 88vh;
+    min-height: 560px;
+    display: flex;
+    align-items: flex-end;
+    padding: 0 3rem 4rem;
+    overflow: hidden;
+  }
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      linear-gradient(to right, rgba(10,10,15,0.95) 35%, rgba(10,10,15,0.3) 70%, rgba(10,10,15,0.05) 100%),
+      linear-gradient(to top, rgba(10,10,15,1) 0%, transparent 40%);
+    z-index: 1;
+  }
+  .hero-img {
+    position: absolute;
+    inset: 0;
+    background: 
+      radial-gradient(ellipse at 70% 40%, #1a0a2e 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 60%, #0d1a2e 0%, transparent 50%),
+      linear-gradient(135deg, #0a0a0f 0%, #1a0510 50%, #0d0a1f 100%);
+    z-index: 0;
+  }
+  .hero-movie-art {
+    position: absolute;
+    right: 5%;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 340px;
+    height: 480px;
+    z-index: 0;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: -40px 0 80px rgba(10,10,15,0.8);
+  }
+  .movie-poster-placeholder {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, #1a1a2e, #16213e, #0f3460);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8rem;
+    opacity: 0.6;
+  }
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 560px;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.72rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 3px;
+    margin-bottom: 1rem;
+  }
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 5vw, 4.5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    margin-bottom: 1rem;
+    letter-spacing: -0.02em;
+  }
+  .hero-meta {
+    display: flex;
+    align-items: center;
+    gap: 1.2rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .rating { color: var(--gold); font-weight: 500; }
+  .hero-desc {
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: #b0aea8;
+    margin-bottom: 2rem;
+    max-width: 460px;
+  }
+  .hero-actions { display: flex; gap: 1rem; }
+  .btn-play {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--gold);
+    color: #0a0a0f;
+    border: none;
+    border-radius: 4px;
+    padding: 0.8rem 2rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-play:hover { background: var(--gold2); transform: translateY(-1px); }
+  .btn-info {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(255,255,255,0.08);
+    color: var(--text);
+    border: 0.5px solid rgba(255,255,255,0.2);
+    border-radius: 4px;
+    padding: 0.8rem 1.8rem;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-info:hover { background: rgba(255,255,255,0.14); }
+
+  /* SECTIONS */
+  .section { padding: 3rem 3rem 0; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+  }
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+  }
+  .section-title::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 1.2em;
+    background: var(--gold);
+    margin-right: 0.7rem;
+    vertical-align: middle;
+    border-radius: 2px;
+  }
+  .see-all {
+    color: var(--gold);
+    text-decoration: none;
+    font-size: 0.82rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: opacity 0.2s;
+  }
+  .see-all:hover { opacity: 0.7; }
+
+  /* GENRE TABS */
+  .genre-tabs {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1.8rem;
+    flex-wrap: wrap;
+  }
+  .genre-tab {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    color: var(--muted);
+    padding: 0.38rem 1rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .genre-tab:hover, .genre-tab.active {
+    background: var(--gold);
+    color: #0a0a0f;
+    border-color: var(--gold);
+  }
+
+  /* MOVIE GRID */
+  .movies-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1.4rem;
+    margin-bottom: 3rem;
+  }
+  .movie-card {
+    cursor: pointer;
+    transition: transform 0.25s;
+  }
+  .movie-card:hover { transform: translateY(-6px); }
+  .movie-card:hover .overlay { opacity: 1; }
+  .poster {
+    position: relative;
+    border-radius: 6px;
+    overflow: hidden;
+    aspect-ratio: 2/3;
+    margin-bottom: 0.7rem;
+    background: var(--surface2);
+  }
+  .poster-art {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3.5rem;
+  }
+  .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(10,10,15,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.25s;
+  }
+  .play-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--gold);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+    color: #0a0a0f;
+    transition: transform 0.15s;
+  }
+  .play-btn:hover { transform: scale(1.1); }
+  .card-label {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 3px;
+  }
+  .card-label.gold { background: var(--gold); color: #0a0a0f; }
+  .card-rating {
+    position: absolute;
+    bottom: 8px;
+    right: 8px;
+    background: rgba(10,10,15,0.85);
+    color: var(--gold);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.2rem 0.55rem;
+    border-radius: 3px;
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+  }
+  .movie-title {
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.2rem;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .movie-meta { color: var(--muted); font-size: 0.78rem; }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(5,5,10,0.92);
+    z-index: 200;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 0.5px solid var(--border);
+    border-radius: 10px;
+    width: 100%;
+    max-width: 820px;
+    overflow: hidden;
+    animation: modalIn 0.3s ease;
+  }
+  @keyframes modalIn {
+    from { transform: scale(0.95) translateY(20px); opacity: 0; }
+    to { transform: scale(1) translateY(0); opacity: 1; }
+  }
+  .modal-header {
+    position: relative;
+    height: 320px;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f0a20, #1a0a30);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 7rem;
+  }
+  .modal-header::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 120px;
+    background: linear-gradient(to top, var(--surface), transparent);
+  }
+  .modal-close {
+    position: absolute;
+    top: 1rem; right: 1rem;
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: #fff;
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    font-size: 1.1rem;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+  }
+  .modal-close:hover { background: rgba(255,255,255,0.2); }
+  .modal-body { padding: 1.5rem 2rem 2rem; }
+  .modal-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+  }
+  .modal-meta {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.85rem;
+    color: var(--muted);
+    flex-wrap: wrap;
+  }
+  .modal-desc { color: #b0aea8; line-height: 1.7; margin-bottom: 1.5rem; font-size: 0.95rem; }
+  .modal-actions { display: flex; gap: 1rem; }
+
+  /* VIDEO PLAYER */
+  .player-wrap {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    z-index: 300;
+    display: none;
+    flex-direction: column;
+  }
+  .player-wrap.open { display: flex; }
+  .player-area {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #050508;
+    position: relative;
+  }
+  .player-screen {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    color: var(--muted);
+  }
+  .player-icon { font-size: 5rem; opacity: 0.3; }
+  .player-title-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    padding: 1.2rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+  }
+  .player-back {
+    background: none;
+    border: 0.5px solid rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 0.35rem 0.9rem;
+    border-radius: 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .player-back:hover { background: rgba(255,255,255,0.1); }
+  .player-now { font-size: 1rem; font-weight: 500; color: #fff; }
+  .player-controls {
+    padding: 1.5rem 2rem;
+    background: var(--surface);
+    border-top: 0.5px solid var(--border);
+  }
+  .progress-bar {
+    width: 100%;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    position: relative;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--gold);
+    border-radius: 2px;
+    width: 30%;
+    transition: width 0.1s;
+  }
+  .controls-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ctrl-left, .ctrl-right { display: flex; align-items: center; gap: 1rem; }
+  .ctrl-btn {
+    background: none;
+    border: none;
+    color: var(--text);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.3rem;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  .ctrl-btn:hover { opacity: 1; }
+  .ctrl-btn.main { font-size: 1.5rem; color: var(--gold); opacity: 1; }
+  .time-display { font-size: 0.82rem; color: var(--muted); }
+
+  /* FOOTER */
+  footer {
+    padding: 3rem;
+    border-top: 0.5px solid var(--border);
+    margin-top: 2rem;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 2rem;
+  }
+  .footer-brand .logo { font-size: 1.3rem; margin-bottom: 0.8rem; display: block; }
+  .footer-brand p { color: var(--muted); font-size: 0.85rem; line-height: 1.7; max-width: 280px; }
+  .footer-col h4 {
+    font-size: 0.78rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 1rem;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li { margin-bottom: 0.55rem; }
+  .footer-col a {
+    color: #7a7a8c;
+    text-decoration: none;
+    font-size: 0.88rem;
+    transition: color 0.2s;
+  }
+  .footer-col a:hover { color: var(--gold); }
+  .footer-bottom {
+    padding: 1.5rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 0.5px solid var(--border);
+  }
+  .footer-bottom p { color: var(--muted); font-size: 0.8rem; }
+
+  @media (max-width: 768px) {
+    nav { padding: 1rem 1.2rem; }
+    .nav-links { display: none; }
+    .hero { padding: 0 1.2rem 3rem; }
+    .hero-movie-art { display: none; }
+    .section { padding: 2rem 1.2rem 0; }
+    .movies-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+    footer { grid-template-columns: 1fr; padding: 2rem 1.2rem; }
+    .footer-bottom { padding: 1rem 1.2rem; flex-direction: column; gap: 0.5rem; }
+    .modal-body { padding: 1rem 1.2rem 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">Cine<span>Vault</span></div>
+  <ul class="nav-links">
+    <li><a href="#" class="active">หน้าแรก</a></li>
+    <li><a href="#">ภาพยนตร์</a></li>
+    <li><a href="#">ซีรีส์</a></li>
+    <li><a href="#">อนิเมะ</a></li>
+    <li><a href="#">รายการทีวี</a></li>
+  </ul>
+  <div class="nav-right">
+    <div class="search-box">
+      <span class="search-icon">🔍</span>
+      <input type="text" placeholder="ค้นหาหนัง..." id="searchInput" oninput="filterMovies()">
+    </div>
+    <button class="btn-login">เข้าสู่ระบบ</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-img"></div>
+  <div class="hero-bg"></div>
+  <div class="hero-movie-art">
+    <div class="movie-poster-placeholder">🎬</div>
+  </div>
+  <div class="hero-content">
+    <div class="badge">🎬 สุดยอดแห่งปี 2024</div>
+    <h1 class="hero-title">The Grand<br>Illusion</h1>
+    <div class="hero-meta">
+      <span class="rating">★ 9.2</span>
+      <span>2024</span>
+      <span>2h 45m</span>
+      <span>อาชญากรรม • ระทึกขวัญ</span>
+    </div>
+    <p class="hero-desc">มหากาพย์อาชญากรรมที่จะทำให้คุณลืมหายใจ เรื่องราวของนักต้มตุ๋นอัจฉริยะที่วางแผนการปล้นครั้งยิ่งใหญ่ที่สุดในประวัติศาสตร์ ด้วยกลอุบายที่ซับซ้อนและพลิกผันอย่างไม่คาดฝัน</p>
+    <div class="hero-actions">
+      <button class="btn-play" onclick="openPlayer('The Grand Illusion')">▶ ดูเลย</button>
+      <button class="btn-info" onclick="openModal(0)">ℹ รายละเอียด</button>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<main>
+  <!-- GENRE TABS -->
+  <div class="section">
+    <div class="genre-tabs" id="genreTabs">
+      <button class="genre-tab active" onclick="filterGenre('ทั้งหมด', this)">ทั้งหมด</button>
+      <button class="genre-tab" onclick="filterGenre('แอคชั่น', this)">แอคชั่น</button>
+      <button class="genre-tab" onclick="filterGenre('ระทึกขวัญ', this)">ระทึกขวัญ</button>
+      <button class="genre-tab" onclick="filterGenre('โรแมนติก', this)">โรแมนติก</button>
+      <button class="genre-tab" onclick="filterGenre('สยองขวัญ', this)">สยองขวัญ</button>
+      <button class="genre-tab" onclick="filterGenre('คอมเมดี้', this)">คอมเมดี้</button>
+      <button class="genre-tab" onclick="filterGenre('ไซไฟ', this)">ไซไฟ</button>
+      <button class="genre-tab" onclick="filterGenre('อนิเมะ', this)">อนิเมะ</button>
+    </div>
+  </div>
+
+  <!-- HOT NOW -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">ร้อนแรงตอนนี้</h2>
+      <a href="#" class="see-all">ดูทั้งหมด →</a>
+    </div>
+    <div class="movies-grid" id="moviesGrid"></div>
+  </div>
+
+  <!-- TRENDING -->
+  <div class="section">
+    <div class="section-header">
+      <h2 class="section-title">มาแรงประจำสัปดาห์</h2>
+      <a href="#" class="see-all">ดูทั้งหมด →</a>
+    </div>
+    <div class="movies-grid" id="trendingGrid"></div>
+  </div>
+</main>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <span class="logo">Cine<span style="color:#c0392b">Vault</span></span>
+    <p>แพลตฟอร์มดูหนังออนไลน์ที่ดีที่สุด ภาพยนตร์และซีรีส์หลากหลายแนว ให้คุณสนุกได้ทุกที่ทุกเวลา</p>
+  </div>
+  <div class="footer-col">
+    <h4>บริการ</h4>
+    <ul>
+      <li><a href="#">ภาพยนตร์</a></li>
+      <li><a href="#">ซีรีส์</a></li>
+      <li><a href="#">อนิเมะ</a></li>
+      <li><a href="#">รายการสด</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>บัญชี</h4>
+    <ul>
+      <li><a href="#">สมัครสมาชิก</a></li>
+      <li><a href="#">แพ็กเกจ</a></li>
+      <li><a href="#">รายการโปรด</a></li>
+      <li><a href="#">ประวัติการดู</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>ช่วยเหลือ</h4>
+    <ul>
+      <li><a href="#">ศูนย์ช่วยเหลือ</a></li>
+      <li><a href="#">ติดต่อเรา</a></li>
+      <li><a href="#">นโยบายความเป็นส่วนตัว</a></li>
+      <li><a href="#">เงื่อนไขบริการ</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2024 CineVault. All rights reserved.</p>
+  <p>🇹🇭 ภาษาไทย</p>
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header" id="modalPoster">🎬</div>
+    <button class="modal-close" onclick="closeModalDirect()">✕</button>
+    <div class="modal-body">
+      <h2 class="modal-title" id="modalTitle">–</h2>
+      <div class="modal-meta" id="modalMeta"></div>
+      <p class="modal-desc" id="modalDesc">–</p>
+      <div class="modal-actions">
+        <button class="btn-play" id="modalPlayBtn">▶ ดูเลย</button>
+        <button class="btn-info" onclick="closeModalDirect()">✕ ปิด</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER -->
+<div class="player-wrap" id="playerWrap">
+  <div class="player-area">
+    <div class="player-title-bar">
+      <button class="player-back" onclick="closePlayer()">← กลับ</button>
+      <span class="player-now" id="playerTitle">กำลังเล่น...</span>
+    </div>
+    <div class="player-screen">
+      <div class="player-icon">🎬</div>
+      <p style="font-size:1.1rem; color:#fff; opacity:0.5;">กำลังสตรีมวิดีโอ...</p>
+      <p style="font-size:0.85rem; opacity:0.3;">(Demo — ไม่มีวิดีโอจริง)</p>
+    </div>
+  </div>
+  <div class="player-controls">
+    <div class="progress-bar" id="progressBar" onclick="seekVideo(event)">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+    <div class="controls-row">
+      <div class="ctrl-left">
+        <button class="ctrl-btn" onclick="skip(-10)">⏮ 10</button>
+        <button class="ctrl-btn main" id="playPauseBtn" onclick="togglePlay()">⏸</button>
+        <button class="ctrl-btn" onclick="skip(10)">10 ⏭</button>
+        <span class="time-display" id="timeDisplay">28:14 / 1:34:52</span>
+      </div>
+      <div class="ctrl-right">
+        <button class="ctrl-btn" onclick="toggleMute()">🔊</button>
+        <button class="ctrl-btn">⚙</button>
+        <button class="ctrl-btn" onclick="toggleFullscreen()">⛶</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const movies = [
+  { id:0, emoji:'🎬', title:'The Grand Illusion', year:'2024', genre:'ระทึกขวัญ', rating:'9.2', duration:'2h 45m', label:'HOT', desc:'มหากาพย์อาชญากรรมที่จะทำให้คุณลืมหายใจ วางแผนการปล้นครั้งยิ่งใหญ่ที่สุดในประวัติศาสตร์' },
+  { id:1, emoji:'🌊', title:'Deep Blue Horizon', year:'2024', genre:'แอคชั่น', rating:'8.7', duration:'2h 10m', label:'NEW', desc:'การผจญภัยใต้มหาสมุทรที่เต็มไปด้วยความลึกลับและอันตราย' },
+  { id:2, emoji:'🌸', title:'Cherry Blossom',    year:'2023', genre:'โรแมนติก', rating:'8.4', duration:'1h 55m', label:'',    desc:'เรื่องราวรักที่งดงามระหว่างหนุ่มสาวสองคนที่พบกันในฤดูซากุระบาน' },
+  { id:3, emoji:'👁️', title:'The Watcher',       year:'2024', genre:'สยองขวัญ', rating:'8.0', duration:'1h 48m', label:'HOT', desc:'ความสยองขวัญที่ติดตามคุณแม้กระทั่งหลับตา' },
+  { id:4, emoji:'🚀', title:'Stellar Drift',      year:'2024', genre:'ไซไฟ',    rating:'9.0', duration:'2h 30m', label:'TOP', desc:'การเดินทางข้ามกาแล็กซีที่จะเปลี่ยนความเข้าใจเรื่องจักรวาล' },
+  { id:5, emoji:'😂', title:'LOL Factory',        year:'2024', genre:'คอมเมดี้', rating:'7.8', duration:'1h 40m', label:'',    desc:'คอมเมดี้สุดฮาที่จะทำให้คุณหัวเราะไม่หยุด' },
+  { id:6, emoji:'⚔️', title:'Shadow Realm',       year:'2023', genre:'แอคชั่น', rating:'8.5', duration:'2h 15m', label:'',    desc:'นักรบผู้โดดเดี่ยวต่อสู้กับอาณาจักรแห่งความมืด' },
+  { id:7, emoji:'🎭', title:'Phantom Stage',      year:'2024', genre:'ระทึกขวัญ', rating:'8.9', duration:'2h 5m', label:'NEW', desc:'ละครเวทีที่ซ่อนความลับสยองขวัญไว้เบื้องหลังม่าน' },
+  { id:8, emoji:'🌙', title:'Moonlit Serenade',   year:'2023', genre:'โรแมนติก', rating:'8.2', duration:'1h 50m', label:'',    desc:'ดนตรีและความรักที่พบกันในคืนเดือนหงาย' },
+  { id:9, emoji:'🦊', title:'Kitsune no Yume',    year:'2024', genre:'อนิเมะ',  rating:'9.1', duration:'1h 58m', label:'TOP', desc:'อนิเมะสุดอลังการเรื่องราวของจิ้งจอกเก้าหาง' },
+  { id:10,emoji:'💀', title:'Dead Signal',        year:'2024', genre:'สยองขวัญ', rating:'7.9', duration:'1h 45m', label:'',    desc:'สัญญาณลึกลับที่นำพาหายนะมาสู่เมืองเล็กๆ' },
+  { id:11,emoji:'🌌', title:'Nebula Rising',      year:'2023', genre:'ไซไฟ',    rating:'8.6', duration:'2h 20m', label:'',    desc:'เมื่อเนบิวลาโบราณตื่นขึ้นและคุกคามระบบสุริยะ' },
+];
+
+const trending = [
+  { id:12,emoji:'🔥', title:'Blazing Trail',    year:'2024', genre:'แอคชั่น',  rating:'8.3', duration:'2h 0m',  label:'TREND', desc:'การแข่งขันความเร็วที่เดิมพันด้วยชีวิต' },
+  { id:13,emoji:'🌺', title:'Eternal Garden',   year:'2024', genre:'โรแมนติก',rating:'8.5', duration:'2h 8m',  label:'',      desc:'สวนนิรันดร์ที่เก็บความรักไว้ไม่รู้เลือน' },
+  { id:14,emoji:'🤖', title:'Metal Heart',      year:'2023', genre:'ไซไฟ',     rating:'8.8', duration:'2h 25m', label:'TOP',   desc:'เมื่อ AI เริ่มมีความรู้สึกและต้องการอิสรภาพ' },
+  { id:15,emoji:'🎪', title:'Carnival of Lies', year:'2024', genre:'ระทึกขวัญ',rating:'8.1', duration:'1h 58m', label:'NEW',   desc:'งานคาร์นิวัลที่ซ่อนความโกหกที่อันตรายที่สุด' },
+  { id:16,emoji:'🐉', title:'Dragon Ascent',   year:'2024', genre:'อนิเมะ',   rating:'9.3', duration:'2h 12m', label:'HOT',   desc:'การขึ้นสู่ตำนานของมังกรผู้พิทักษ์ฟ้า' },
+  { id:17,emoji:'👻', title:'Ghost Protocol',  year:'2023', genre:'สยองขวัญ', rating:'7.7', duration:'1h 52m', label:'',      desc:'โปรโตคอลลับที่ปลุกวิญญาณผู้ล่วงลับ' },
+  { id:18,emoji:'🎵', title:'Symphony of Us',  year:'2024', genre:'โรแมนติก',rating:'8.0', duration:'1h 44m', label:'',      desc:'ดนตรีเป็นภาษาที่รักใช้พูดกัน' },
+  { id:19,emoji:'💣', title:'Last Countdown',  year:'2024', genre:'แอคชั่น',  rating:'8.4', duration:'2h 2m',  label:'NEW',   desc:'นับถอยหลังสู่การระเบิดที่ยิ่งใหญ่ที่สุด' },
+];
+
+let activeGenre = 'ทั้งหมด';
+let playing = false;
+let progress = 30;
+let interval;
+
+function renderCards(data, gridId) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = '';
+  const filtered = activeGenre === 'ทั้งหมด' ? data : data.filter(m => m.genre === activeGenre);
+  if (!filtered.length) {
+    grid.innerHTML = '<p style="color:var(--muted);padding:2rem 0;grid-column:1/-1;">ไม่พบภาพยนตร์ในหมวดนี้</p>';
+    return;
+  }
+  filtered.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'movie-card';
+    card.innerHTML = `
+      <div class="poster" style="background:hsl(${m.id*23},30%,12%)">
+        <div class="poster-art">${m.emoji}</div>
+        ${m.label ? `<span class="card-label ${m.label==='TOP'?'gold':''}">${m.label}</span>` : ''}
+        <span class="card-rating">★ ${m.rating}</span>
+        <div class="overlay">
+          <button class="play-btn" onclick="openPlayer('${m.title.replace(/'/g,"\\'")}')">▶</button>
+        </div>
+      </div>
+      <div class="movie-title">${m.title}</div>
+      <div class="movie-meta">${m.year} · ${m.genre}</div>
+    `;
+    card.querySelector('.poster').addEventListener('click', (e) => {
+      if (!e.target.closest('.play-btn')) openModal(m.id);
+    });
+    grid.appendChild(card);
+  });
+}
+
+function filterGenre(genre, btn) {
+  activeGenre = genre;
+  document.querySelectorAll('.genre-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderCards(movies, 'moviesGrid');
+  renderCards(trending, 'trendingGrid');
+}
+
+function filterMovies() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const all = [...movies, ...trending];
+  document.getElementById('moviesGrid').innerHTML = '';
+  document.getElementById('trendingGrid').innerHTML = '';
+  if (!q) { renderCards(movies, 'moviesGrid'); renderCards(trending, 'trendingGrid'); return; }
+  const res = all.filter(m => m.title.toLowerCase().includes(q) || m.genre.toLowerCase().includes(q));
+  const grid = document.getElementById('moviesGrid');
+  if (!res.length) { grid.innerHTML = '<p style="color:var(--muted);padding:2rem 0;grid-column:1/-1;">ไม่พบผลการค้นหา</p>'; return; }
+  res.forEach(m => {
+    const card = document.createElement('div');
+    card.className = 'movie-card';
+    card.innerHTML = `
+      <div class="poster" style="background:hsl(${m.id*23},30%,12%)">
+        <div class="poster-art">${m.emoji}</div>
+        ${m.label ? `<span class="card-label ${m.label==='TOP'?'gold':''}">${m.label}</span>` : ''}
+        <span class="card-rating">★ ${m.rating}</span>
+        <div class="overlay"><button class="play-btn" onclick="openPlayer('${m.title.replace(/'/g,"\\'")}')">▶</button></div>
+      </div>
+      <div class="movie-title">${m.title}</div>
+      <div class="movie-meta">${m.year} · ${m.genre}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function openModal(id) {
+  const all = [...movies, ...trending];
+  const m = all.find(x => x.id === id);
+  if (!m) return;
+  document.getElementById('modalPoster').textContent = m.emoji;
+  document.getElementById('modalPoster').style.background = `hsl(${m.id*23},30%,12%)`;
+  document.getElementById('modalTitle').textContent = m.title;
+  document.getElementById('modalMeta').innerHTML = `<span class="rating">★ ${m.rating}</span><span>${m.year}</span><span>${m.duration}</span><span>${m.genre}</span>`;
+  document.getElementById('modalDesc').textContent = m.desc;
+  document.getElementById('modalPlayBtn').onclick = () => { closeModalDirect(); openPlayer(m.title); };
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeModal(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+}
+function closeModalDirect() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function openPlayer(title) {
+  document.getElementById('playerTitle').textContent = 'กำลังเล่น: ' + title;
+  document.getElementById('playerWrap').classList.add('open');
+  playing = true;
+  document.getElementById('playPauseBtn').textContent = '⏸';
+  clearInterval(interval);
+  interval = setInterval(() => {
+    if (playing) {
+      progress = Math.min(progress + 0.05, 100);
+      document.getElementById('progressFill').style.width = progress + '%';
+    }
+  }, 500);
+}
+
+function closePlayer() {
+  document.getElementById('playerWrap').classList.remove('open');
+  clearInterval(interval);
+  playing = false;
+  progress = 30;
+  document.getElementById('progressFill').style.width = '30%';
+}
+
+function togglePlay() {
+  playing = !playing;
+  document.getElementById('playPauseBtn').textContent = playing ? '⏸' : '▶';
+}
+
+function toggleMute() {
+  const btn = document.querySelector('.ctrl-right .ctrl-btn');
+  btn.textContent = btn.textContent === '🔊' ? '🔇' : '🔊';
+}
+
+function skip(sec) {
+  progress = Math.max(0, Math.min(100, progress + sec * 0.18));
+  document.getElementById('progressFill').style.width = progress + '%';
+}
+
+function seekVideo(e) {
+  const bar = document.getElementById('progressBar');
+  const rect = bar.getBoundingClientRect();
+  progress = Math.max(0, Math.min(100, ((e.clientX - rect.left) / rect.width) * 100));
+  document.getElementById('progressFill').style.width = progress + '%';
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) document.getElementById('playerWrap').requestFullscreen().catch(() => {});
+  else document.exitFullscreen();
+}
+
+renderCards(movies, 'moviesGrid');
+renderCards(trending, 'trendingGrid');
+</script>
+</body>
+</html>
